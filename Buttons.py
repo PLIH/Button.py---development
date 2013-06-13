@@ -22,8 +22,19 @@ pygame.init()
 class Button:
 
     #a funct for square & text
+    def labeledButton(self, surface, colour, length,height,x,y,width,text,textColour):
+        self.square(surface,colour,length,height,x,y)
+        self.text(surface, text, textColour,x,y,length,height)
+        return surface
+
 
     #a funct for circle & text
+    def labeledCircle(self,surface,colour,length,height,x,y,width,text,textColour):
+        pygame.draw.ellipse(surface, colour, (x,y,length,height),0)
+        self.text(surface, text, textColour,x,y,length,height)
+        self.rect = pygame.Rect(x,y,length,height)
+        return surface
+
 
     #a funct for square
     def square(self, surface, colour, length, height, x, y):
@@ -38,16 +49,33 @@ class Button:
         return surface
 
     #a funct for text
-    def text(self, surface, text, colour, size, x, y):
+    def text(self, surface, text, colour, x, y, length, height):
+        size = int(length//len(text))
         font = pygame.font.SysFont("None", size)
         myText = font.render(text, 1, colour)
-        surface.blit(myText, (x,y))
+        # These calcs work bc text should be center on button
+        # so center, use length to find mid-length
+        # then find the middle of the text (should be shorter then mid-len
+        # find diff btw two.  This diff must be added to x to be on button
+        text_x = (length/2 - myText.get_height()/2)+x
+        text_y = (height/2 - myText.get_height()/2)+y
+        surface.blit(myText, (text_x,text_y))
         return surface
 
     #a funct for text + invisi square
+    def invisiSquare(self, surface, length,height,x,y,width,text,textColour):
+        #make the square invisible
+        s = pygame.Surface((length,height))
+        s.fill((255,255,255))
+        s.set_alpha(1)
+        pygame.draw.rect(s,(255,255,255),(x,y,length,height),1)
+        self.text(surface, text, textColour,x,y,length,height)
+        self.rect = pygame.Rect(x,y,length,height)
+        return surface
+
 
     #an alpha square
-    def alpha_square(self, surface, colour, length, height, x, y):
+    def alphaSquare(self, surface, colour, length, height, x, y):
         for i in range(1,10):
             s = pygame.Surface((length+(i*2), height+(i*2)))
             s.fill(colour)
@@ -63,7 +91,7 @@ class Button:
         return surface
 
     #an alpha circle
-    def alpha_circle(self, surface, colour, length, height, x, y):
+    def alphaCircle(self, surface, colour, length, height, x, y):
         for i in range(1,10):
             s = pygame.Surface((length+(i*2), height+(i*2)))
             s.fill(colour)
